@@ -1,8 +1,15 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 import { initializeApp } from "firebase/app";
 import { getDatabase, onValue, ref, set } from "firebase/database";
+
+export const AllowedFeatureFlags = ["Nikola", 'Mladen'] as const;
+
+export type FeatureFlag = typeof AllowedFeatureFlags[number];
+
+const first: FeatureFlag = 'Nikola';
+console.log(first)
 
 const firebaseConfig = {
   apiKey: "AIzaSyBvkOf56RKKmYXYDPMaTNQ4Bi8cle3SQ30",
@@ -23,10 +30,7 @@ const database = getDatabase(app);
 
 console.log(database);
 
-
-
-
-function write(id: number ) {
+function write(id: number) {
   const user = ref(database, "users/" + id);
   set(user, {
     key: "value",
@@ -45,20 +49,63 @@ function WriteButton() {
   );
 }
 
-function read() {
-  const usersRef = ref(database, "users");
-  console.log('init read');
+type ResultsFromDb = { [userId: number]: User };
 
-  return onValue(usersRef, (snapshot) => {
-    const data = snapshot.val();
-    console.log("read data", data);
-  });
+type User = {
+  email: string;
+  key: string;
+};
+
+function Results() {
+  const [results, setResults] = useState<ResultsFromDb>({});
+  function read() {
+    const usersRef = ref(database, "users");
+    console.log("init read from db");
+
+    return onValue(usersRef, (snapshot) => {
+      const data = snapshot.val();
+      setResults(data);
+    });
+  }
+  useEffect(read, []);
+
+  return (
+    <div>
+      Results
+      {Object.entries(results).map(([id, user]) => (
+        <div key={id}>
+          {id} {user.email} {user.key}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// testing how react tracks component ids
+function TestBase() {
+  const [renderFirst, setRenderFirst] = useState(true);
+
+  let c;
+  if (renderFirst) {
+    c= <TestChild key={1} />;
+  } else {
+    c= <TestChild key={2} />;
+  }
+
+  return <>
+    <button onClick={() => setRenderFirst(!renderFirst)}>Set render first, currently {`${renderFirst}`}</button>
+    {c}
+  </>
+}
+
+function TestChild() {
+  const [count, setCount] = useState(0);
+  useEffect(() => console.log('init component'), []);
+  return <div onClick={() => setCount(count + 1)}>I'm Child {count}</div>;
 }
 
 function App() {
   const [count, setCount] = useState(0);
-
-  useEffect(read, []);
 
   return (
     <div className="App">
@@ -71,6 +118,7 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
+      <TestBase></TestBase>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
@@ -78,7 +126,8 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR - wow!
         </p>
-          <WriteButton />
+        <WriteButton />
+        <Results />
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
