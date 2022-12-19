@@ -1,0 +1,9 @@
+// default vsconfig settings.json with autoimport on save:
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.addMissingImports": true,
+    "source.fixAll.eslint": true
+  },
+  "eslint.format.enable": true
+}

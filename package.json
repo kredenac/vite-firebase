@@ -4,16 +4,19 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "start": "vite",
     "deploy": "vite build && firebase deploy --only hosting",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "start":  "firebase emulators:start"
+    "prod-env": "firebase emulators:start"
   },
   "dependencies": {
+    "@types/uuid": "^9.0.0",
+    "firebase": "^9.6.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "firebase": "^9.6.1"
+    "react-query": "^3.39.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.15",
