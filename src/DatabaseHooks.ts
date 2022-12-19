@@ -2,21 +2,13 @@ import { onValue, ref, remove as firebaseRemove, set } from "firebase/database";
 import { useEffect, useMemo, useState } from "react";
 import { useDatabase } from "./FirebaseProvider";
 
-export type DatabaseApi<T> =
-  | {
-      state: null;
-      write: (value: T) => Promise<void>;
-      error: string;
-      isLoading: false;
-      remove: (id: string) => Promise<void>;
-    }
-  | {
-      state: T | null;
-      write: (value: T) => Promise<void>;
-      error: undefined;
-      isLoading: boolean;
-      remove: (id: string) => Promise<void>;
-    };
+export type DatabaseApi<T> = {
+  state: T | null;
+  write: (value: T) => Promise<void>;
+  error?: string;
+  isLoading: boolean;
+  remove: (id: string) => Promise<void>;
+};
 
 export const useDatabaseValue = <T>(path: string[]): DatabaseApi<T> => {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,6 +17,8 @@ export const useDatabaseValue = <T>(path: string[]): DatabaseApi<T> => {
   const databasePath = path.join("/");
 
   const { write, locationRef, remove } = useMemo(() => {
+    setState(null);
+    setIsLoading(true);
     const locationRef = ref(database, databasePath);
 
     const write = async (value: T) => {
@@ -45,24 +39,14 @@ export const useDatabaseValue = <T>(path: string[]): DatabaseApi<T> => {
 
   useEffect(() => {
     const unsubscribe = onValue(locationRef, (snapshot) => {
-      setIsLoading(false);
       const newValue = snapshot.val();
-      if (JSON.stringify(newValue) === JSON.stringify(state)) return;
+      // if (JSON.stringify(newValue) === JSON.stringify(state)) return;
       setState(newValue);
+      setIsLoading(false);
     });
 
     return unsubscribe;
-  }, [locationRef]);
-
-  if (!state) {
-    return {
-      write,
-      state: null,
-      error: "No data",
-      isLoading: false,
-      remove,
-    };
-  }
+  }, [databasePath]);
 
   return { write, state: state!, isLoading, error: undefined, remove };
 };

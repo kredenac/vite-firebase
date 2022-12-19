@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-
-import "./Notepad.css";
 import { useEditTask } from "./DatabaseHooksApi";
 import { TaskList } from "./TaskList";
 import { useAppState } from "./ContextProviders";
 import { uuidv4 } from "@firebase/util";
+import { Button, TextareaAutosize, TextField } from "@mui/material";
 
 export const NotepadIntro = () => {
   return (
@@ -20,18 +19,13 @@ const NewTaskButton = () => {
   const { setTaskId } = useAppState();
 
   return (
-    <button
+    <Button
+      variant="contained"
+      sx={{ m: 2 }}
       onClick={() => setTaskId(uuidv4())}
-      style={{
-        margin: "0 auto",
-        display: "flex",
-        justifyItems: "center",
-        alignItems: "center",
-        padding: "8px",
-      }}
     >
       🆕 Task
-    </button>
+    </Button>
   );
 };
 
@@ -45,9 +39,9 @@ const useCtrlEnter = () => {
       }
       setIsCtrlEnter(false);
     };
-    ref.current.addEventListener("keydown", keyDown);
+    ref.current?.addEventListener?.("keydown", keyDown);
     return () => {
-      ref.current.removeEventListener("keydown", keyDown);
+      ref.current?.removeEventListener?.("keydown", keyDown);
     };
   }, []);
 
@@ -56,9 +50,12 @@ const useCtrlEnter = () => {
 
 export const Notepad = () => {
   const { setTaskId, taskId } = useAppState();
-  const { write, state, isLoading, remove } = useEditTask();
-
-  const { text } = state || { text: "" };
+  const { write, isLoading, state } = useEditTask();
+  const [text, setText] = useState("");
+  useEffect(() => {
+    if (isLoading) return;
+    setText(state?.text ?? "");
+  }, [taskId, isLoading]);
 
   const { isCtrlEnter, ref } = useCtrlEnter();
 
@@ -69,22 +66,24 @@ export const Notepad = () => {
     }
   }, [isCtrlEnter]);
 
-  if (isLoading) {
-    return null;
-  }
-
   return (
-    <textarea
-      ref={ref as any}
-      id="notepad"
+    <TextField
       value={text}
       onChange={async (e) => {
+        setText(e.target.value);
         await write({ text: e.target.value, lastModified: Date.now() });
+        // TODO remove element from tasklist when empty
         // if (!e.target.value) {
         //   await remove(taskId);
         // }
       }}
-      placeholder={"New todo..."}
+      fullWidth={true}
+      ref={ref as any}
+      label="New todo"
+      multiline
+      rows={Math.max(5, text.split("\n").length)}
+      placeholder={"Press Ctrl+Enter to create a new task..."}
+      variant="outlined"
     />
   );
 };

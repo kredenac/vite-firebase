@@ -1,9 +1,0 @@
-#notepad {
-  width: 100%;
-  box-sizing: border-box;
-  height: 90px;
-  border-radius: 8px;
-  padding: 8px;
-  resize: none;
-  font-size: large;
-}

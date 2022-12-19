@@ -1,6 +1,9 @@
-import { calculateBackoffMillis } from "@firebase/util";
+import ListItem from "@mui/material/ListItem";
+import List from "@mui/material/List";
 import { useAppState } from "./ContextProviders";
-import { TaskListDb, useTodoList } from "./DatabaseHooksApi";
+import { useTodoList } from "./DatabaseHooksApi";
+import { Button, IconButton } from "@mui/material";
+import { IoTrashOutline } from "react-icons/io5";
 
 export const TaskList = () => {
   const { state, isLoading, remove } = useTodoList();
@@ -14,17 +17,17 @@ export const TaskList = () => {
   );
 
   return (
-    <ul style={{ listStyleType: "none", padding: 0 }}>
+    <List disablePadding>
       {sortedTasks.map(([key, value]) => (
-        <li key={key} style={{ marginTop: "8px" }}>
+        <ListItem key={key}>
           <TaskItem
             onRemove={() => remove(key)}
             text={value.text}
             taskId={key}
           />
-        </li>
+        </ListItem>
       ))}
-    </ul>
+    </List>
   );
 };
 
@@ -59,25 +62,21 @@ const TaskItem = (props: TaskItemProps) => {
           textAlign: "left",
           whiteSpace: "pre-wrap",
           cursor: "pointer",
-          maxWidth: "90vw",
-          width: "90vw",
         }}
       >
         {text.trim()}
       </div>
-      <button
+      <IconButton
         onClick={onRemove}
-        style={{
-          height: "28px",
-          width: "32px",
-          padding: "4px",
+        sx={{
           position: "absolute",
-          bottom: "4px",
           right: "4px",
+          bottom: "0px",
         }}
+        size="small"
       >
-        🗑
-      </button>
+        <IoTrashOutline />
+      </IconButton>
     </section>
   );
 };
