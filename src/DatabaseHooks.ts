@@ -52,7 +52,7 @@ export const useDatabaseValue = <T>(path: string[]): DatabaseApi<T> => {
     });
 
     return unsubscribe;
-  }, []);
+  }, [locationRef]);
 
   if (!state) {
     return {

@@ -1,31 +1,60 @@
 import { useState, useEffect, useRef } from "react";
 
 import "./Notepad.css";
-import { useNewTodo } from "./DatabaseHooksApi";
+import { useEditTask } from "./DatabaseHooksApi";
 import { TaskList } from "./TaskList";
+import { useAppState } from "./ContextProviders";
+import { uuidv4 } from "@firebase/util";
 
 export const NotepadIntro = () => {
-  // const { isLoading } = useDatabaseValue();
-
   return (
     <div id="intro">
-      {/* {isLoading && "Waiting for database to load..."} */}
       <Notepad />
+      <NewTaskButton />
       <TaskList />
     </div>
   );
 };
 
-export const Notepad = () => {
-  const [cursorPosition, setCursorPosition] = useState(0);
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const { write, state, isLoading } = useNewTodo();
+const NewTaskButton = () => {
+  const { setTaskId } = useAppState();
 
-  const { text } = state || {};
+  return <button onClick={() => setTaskId(uuidv4())}>🆕 Task</button>;
+};
+
+const useCtrlEnter = () => {
+  const ref = useRef({} as HTMLInputElement);
+  const [isCtrlEnter, setIsCtrlEnter] = useState(false);
+  useEffect(() => {
+    const keyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "Enter") {
+        return setIsCtrlEnter(true);
+      }
+      setIsCtrlEnter(false);
+    };
+    ref.current.addEventListener("keydown", keyDown);
+    return () => {
+      ref.current.removeEventListener("keydown", keyDown);
+    };
+  }, []);
+
+  return { ref, isCtrlEnter };
+};
+
+export const Notepad = () => {
+  const { setTaskId } = useAppState();
+  const { write, state, isLoading } = useEditTask();
+
+  const { text } = state || { text: "" };
+
+  const { isCtrlEnter, ref } = useCtrlEnter();
 
   useEffect(() => {
-    textAreaRef.current?.setSelectionRange(cursorPosition, cursorPosition);
-  }, [cursorPosition, text]);
+    if (isCtrlEnter) {
+      const newTaskId = uuidv4();
+      setTaskId(newTaskId);
+    }
+  }, [isCtrlEnter]);
 
   if (isLoading) {
     return null;
@@ -33,12 +62,11 @@ export const Notepad = () => {
 
   return (
     <textarea
-      ref={textAreaRef}
+      ref={ref as any}
       id="notepad"
       value={text}
       onChange={(e) => {
-        setCursorPosition(e.target.selectionStart);
-        write({ text: e.target.value });
+        write({ text: e.target.value, lastModified: Date.now() });
       }}
       placeholder={"Start your productive life here!"}
     />

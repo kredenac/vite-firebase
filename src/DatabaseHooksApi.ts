@@ -1,16 +1,16 @@
 import { DatabaseApi, useDatabaseValue } from "./DatabaseHooks";
-import { v4 as getId } from "uuid";
-import { useMemo } from "react";
+import { useAppState } from "./ContextProviders";
 
 const userId = "dimi";
 
 export type Task = {
   text: string;
+  lastModified: number;
 };
 
-export const useNewTodo = (): DatabaseApi<Task> => {
-  const todoId = useMemo(() => getId(), []);
-  return useDatabaseValue<Task>(["users", userId, todoId]);
+export const useEditTask = (): DatabaseApi<Task> => {
+  const { taskId } = useAppState();
+  return useDatabaseValue<Task>(["users", userId, taskId]);
 };
 
 export type TaskListDb = Task[];
