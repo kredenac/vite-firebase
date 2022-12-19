@@ -10,9 +10,10 @@ function App() {
         <DatabaseProvider value={firebaseDefaultDatabase}>
           <NotepadIntro />
           <div>
-            <a href="https://vitejs.dev" target="_blank">
-              <img src="/vite.svg" className="logo" alt="Vite logo" />
-            </a>
+            <img src="/vite.svg" className="logo" alt="Vite logo" />
+            <p style={{ color: "gray" }}>
+              Get the most out of your day with productive.ly
+            </p>
           </div>
         </DatabaseProvider>
       </AppStateProvider>
