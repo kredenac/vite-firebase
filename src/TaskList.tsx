@@ -1,3 +1,4 @@
+import { calculateBackoffMillis } from "@firebase/util";
 import { useAppState } from "./ContextProviders";
 import { TaskListDb, useTodoList } from "./DatabaseHooksApi";
 
@@ -42,6 +43,7 @@ const TaskItem = (props: TaskItemProps) => {
         display: "flex",
         width: "100%",
         alignItems: "center",
+        position: "relative",
       }}
     >
       <div
@@ -57,15 +59,22 @@ const TaskItem = (props: TaskItemProps) => {
           textAlign: "left",
           whiteSpace: "pre-wrap",
           cursor: "pointer",
-          // maxWidth: "70vw",
-          width: "100%",
+          maxWidth: "90vw",
+          width: "90vw",
         }}
       >
         {text.trim()}
       </div>
       <button
         onClick={onRemove}
-        style={{ height: "28px", width: "32px", padding: "4px" }}
+        style={{
+          height: "28px",
+          width: "32px",
+          padding: "4px",
+          position: "absolute",
+          bottom: "4px",
+          right: "4px",
+        }}
       >
         🗑
       </button>
