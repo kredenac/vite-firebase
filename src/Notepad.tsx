@@ -55,8 +55,8 @@ const useCtrlEnter = () => {
 };
 
 export const Notepad = () => {
-  const { setTaskId } = useAppState();
-  const { write, state, isLoading } = useEditTask();
+  const { setTaskId, taskId } = useAppState();
+  const { write, state, isLoading, remove } = useEditTask();
 
   const { text } = state || { text: "" };
 
@@ -78,8 +78,11 @@ export const Notepad = () => {
       ref={ref as any}
       id="notepad"
       value={text}
-      onChange={(e) => {
-        write({ text: e.target.value, lastModified: Date.now() });
+      onChange={async (e) => {
+        await write({ text: e.target.value, lastModified: Date.now() });
+        // if (!e.target.value) {
+        //   await remove(taskId);
+        // }
       }}
       placeholder={"New todo..."}
     />
