@@ -1,7 +1,7 @@
 import { TaskListDb, useTodoList } from "./DatabaseHooksApi";
 
 export const TaskList = () => {
-  const { state, isLoading } = useTodoList();
+  const { state, isLoading, remove } = useTodoList();
 
   if (isLoading || !state) {
     return null;
@@ -10,12 +10,48 @@ export const TaskList = () => {
   const tmpFix = Object.entries(state);
 
   return (
-    <ol>
+    <ul style={{ listStyleType: "none" }}>
       {tmpFix.map(([key, value]) => (
         <li key={key}>
-          <div style={{ whiteSpace: "pre-line" }}>{value.text}</div>
+          <TaskItem onRemove={() => remove(key)} text={value.text} />
         </li>
       ))}
-    </ol>
+    </ul>
+  );
+};
+
+interface TaskItemProps {
+  onRemove: () => void;
+  text: string;
+}
+
+const TaskItem = (props: TaskItemProps) => {
+  const { onRemove, text } = props;
+  return (
+    <section
+      style={{
+        display: "flex",
+        width: "100%",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          whiteSpace: "pre-line",
+          border: "1px gray solid",
+          borderRadius: "4px",
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "left",
+          padding: "8px",
+        }}
+      >
+        {text}
+      </div>
+      <button onClick={onRemove} style={{ maxHeight: "40px" }}>
+        🗑
+      </button>
+    </section>
   );
 };
