@@ -13,7 +13,7 @@ export const TaskList = () => {
   );
 
   return (
-    <ul style={{ listStyleType: "none" }}>
+    <ul style={{ listStyleType: "none", padding: 0 }}>
       {sortedTasks.map(([key, value]) => (
         <li key={key} style={{ marginTop: "8px" }}>
           <TaskItem
@@ -55,13 +55,18 @@ const TaskItem = (props: TaskItemProps) => {
           justifyContent: "left",
           padding: "8px",
           textAlign: "left",
-          whiteSpace: "pre",
+          whiteSpace: "pre-wrap",
           cursor: "pointer",
+          // maxWidth: "70vw",
+          width: "100%",
         }}
       >
         {text.trim()}
       </div>
-      <button onClick={onRemove} style={{ maxHeight: "40px" }}>
+      <button
+        onClick={onRemove}
+        style={{ height: "28px", width: "32px", padding: "4px" }}
+      >
         🗑
       </button>
     </section>

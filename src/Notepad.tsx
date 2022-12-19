@@ -8,7 +8,7 @@ import { uuidv4 } from "@firebase/util";
 
 export const NotepadIntro = () => {
   return (
-    <div id="intro">
+    <div>
       <Notepad />
       <NewTaskButton />
       <TaskList />
@@ -19,7 +19,20 @@ export const NotepadIntro = () => {
 const NewTaskButton = () => {
   const { setTaskId } = useAppState();
 
-  return <button onClick={() => setTaskId(uuidv4())}>🆕 Task</button>;
+  return (
+    <button
+      onClick={() => setTaskId(uuidv4())}
+      style={{
+        margin: "0 auto",
+        display: "flex",
+        justifyItems: "center",
+        alignItems: "center",
+        padding: "8px",
+      }}
+    >
+      🆕 Task
+    </button>
+  );
 };
 
 const useCtrlEnter = () => {
@@ -68,7 +81,7 @@ export const Notepad = () => {
       onChange={(e) => {
         write({ text: e.target.value, lastModified: Date.now() });
       }}
-      placeholder={"Start your productive life here!"}
+      placeholder={"New todo..."}
     />
   );
 };

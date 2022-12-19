@@ -5,5 +5,10 @@
     "source.addMissingImports": true,
     "source.fixAll.eslint": true
   },
-  "eslint.format.enable": true
+  "eslint.format.enable": true,
+  "search.exclude": {
+    "**/node_modules": true,
+    "yarn.lock": true,
+    "**/*.svg": true
+  }
 }
