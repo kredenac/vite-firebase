@@ -2,7 +2,7 @@ import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
 import { useAppState } from "./ContextProviders";
 import { useTodoList } from "./DatabaseHooksApi";
-import { Button, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { IoTrashOutline } from "react-icons/io5";
 
 export const TaskList = () => {
@@ -17,9 +17,9 @@ export const TaskList = () => {
   );
 
   return (
-    <List disablePadding>
+    <List disablePadding sx={{ display: "flex", flexDirection: "column" }}>
       {sortedTasks.map(([key, value]) => (
-        <ListItem key={key}>
+        <ListItem key={key} sx={{ px: 0, py: 0.5 }}>
           <TaskItem
             onRemove={() => remove(key)}
             text={value.text}
@@ -43,9 +43,10 @@ const TaskItem = (props: TaskItemProps) => {
   return (
     <section
       style={{
-        display: "flex",
-        width: "100%",
-        alignItems: "center",
+        // display: "flex",
+        // maxWidth: "100%",
+        flex: 1,
+        alignItems: "center ",
         position: "relative",
       }}
     >
@@ -62,6 +63,7 @@ const TaskItem = (props: TaskItemProps) => {
           textAlign: "left",
           whiteSpace: "pre-wrap",
           cursor: "pointer",
+          overflow: "hidden",
         }}
       >
         {text.trim()}

@@ -13,8 +13,24 @@ export type DatabaseApi<T> = {
 export const useDatabaseValue = <T>(path: string[]): DatabaseApi<T> => {
   const [isLoading, setIsLoading] = useState(true);
   const [state, setState] = useState<T | null>(null);
+  const [hmr, setHmr] = useState(0);
   const database = useDatabase();
   const databasePath = path.join("/");
+
+  const reconnectionId = databasePath + hmr;
+
+  // reconnect to database on Vite HTM
+  if (import.meta.hot) {
+    import.meta.hot.accept((newModule) => {
+      console.log("Received new module", newModule);
+      setHmr((prev) => prev + 1);
+    });
+
+    import.meta.hot.on("vite:beforeUpdate", () => {
+      console.log("Running before update!!");
+      setHmr((prev) => prev + 1);
+    });
+  }
 
   const { write, locationRef, remove } = useMemo(() => {
     setState(null);
@@ -35,18 +51,17 @@ export const useDatabaseValue = <T>(path: string[]): DatabaseApi<T> => {
     };
 
     return { write, locationRef, remove };
-  }, [databasePath]);
+  }, [reconnectionId]);
 
   useEffect(() => {
     const unsubscribe = onValue(locationRef, (snapshot) => {
       const newValue = snapshot.val();
-      // if (JSON.stringify(newValue) === JSON.stringify(state)) return;
       setState(newValue);
       setIsLoading(false);
     });
 
     return unsubscribe;
-  }, [databasePath]);
+  }, [reconnectionId]);
 
   return { write, state: state!, isLoading, error: undefined, remove };
 };

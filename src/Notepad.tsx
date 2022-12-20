@@ -3,7 +3,7 @@ import { useEditTask } from "./DatabaseHooksApi";
 import { TaskList } from "./TaskList";
 import { useAppState } from "./ContextProviders";
 import { uuidv4 } from "@firebase/util";
-import { Button, TextareaAutosize, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 
 export const NotepadIntro = () => {
   return (
